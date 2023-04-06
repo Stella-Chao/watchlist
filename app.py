@@ -1,6 +1,37 @@
-from flask import Flask, render_template
+import os
+import sys
 
+from flask import Flask, render_template, url_for
+from flask_sqlalchemy import SQLAlchemy
+
+# 识别系统，设定sqlite
+WIN = sys.platform.startswith('win')
+if WIN:
+    prefix = 'sqlite:///'
+else:
+    prefix = 'sqlite:////'
+
+# 实例化flask
 app = Flask(__name__)
+
+# 设定app.config
+app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
+
+# 声明数据库
+db = SQLAlchemy(app)
+
+# 声明数据的格式，使用db Model生成格式
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Strings(20))
+
+class Movie(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(60))
+    year = db.Column(db.String(6))
+
+
 
 name = 'Sun Zhao'
 movies = [
