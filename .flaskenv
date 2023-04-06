@@ -1,0 +1,1 @@
+export FLASKAPP = app.py
