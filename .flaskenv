@@ -1,1 +1,1 @@
-export FLASKAPP = app.py
+export FLASKAPP = watchlist

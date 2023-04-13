@@ -83,7 +83,7 @@ def admin(username, password):
     db.create_all()
 
     user = User.query.first()
-    if user is not None: # user data None ,
+    if user is not None:  # user data None ,
         click.echo('Updating user...')
         user.username = username
         user.set_password(password)
@@ -204,7 +204,6 @@ def delete(movie_id):
 
 @app.errorhandler(404)
 def page_no_found(e):
-    user = User.query.first()
     return render_template('404.html'), 404
 
 @app.cli.command()
@@ -231,4 +230,6 @@ def forge():
         db.session.add(movie)
     db.session.commit()
     click.echo('done! ')
+
+
 
