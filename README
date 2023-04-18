@@ -1,1 +1,88 @@
-A WTACHLIST DEMO FOR STUDYING FLASK
+# 1. A WTACHLIST DEMO FOR STUDYING FLASK
+1. 项目主要参考Grey Li的 [Flask 入门教程](https://github.com/helloflask/watchlist)
+
+# 2. app.py
+1. 项目代码集成在app.py
+2. export (win使用set) 设置 FLASKAPP = app.py，使flask程序找到实例化的app = Flask(__name__)程序实例
+3. 或 python-dotenv 在根目录设置.flaskenv文件，写入''' export FLASKAPP=app.py '''，作用与 2.相同
+4. ''' flask run ''' 执行flask程序，自动调用5000端口
+
+
+## 2.1 设置路由与模板渲染
+'''
+├── .flaskenv
+|-- __init__.py # 项目文件识别为package
+├── app.py #
+├── static  # 静态文件
+│   ├── images   # 图片
+│   └── style.css  # css样式表
+└── templates # 模板
+    |-- index.html
+'''
+1. 使用装饰器@app.route('/url')装饰路由，
+示例:
+'''
+@app.route('/')
+def hello(): # 视图函数
+    return render_template('index.html')
+'''
+* url_for('hello') == '/'  # 由视图函数获得 url
+2. 使用render_template('name.html')渲染html模板
+3. Flask 支持在 URL 规则字符串里对变量设置处理器, 如@app.route('user/<int:number>')
+4. 静态文件，html模板放在templates文件夹，图片与css在static文件夹
+5. 重复度高的模板可用base.html与{% block content %} {% endblock %} 继承
+6. html中遇到的junjia2语法，主要为：
+* {{ ... }} 用来标记变量。
+* {% ... %} 用来标记语句，比如 if 语句，for 语句等。
+* {# ... #} 用来写注释
+
+## 2.2 添加DBMS，采用flask_sqlalchemy
+1. 设置app.config['SQLALCHEMY_DATABASE_URI']设置数据库链接文件地址
+2. 使用 SQLAlchemy 操作数据库, db=SQLAlchemy(app)
+3. class DataName(db.Models):   # 声明数据库模型
+* db.session.* 对数据库db进行操作, 每次数据操作需要db.session.commit()至数据库
+* DataName.query.<过滤方法（可选）>.<查询方法>
+
+## 2.3 表单Form
+1. html设置form与method，app.route设置可接收的methods
+2. 使用from flask import request 操作接受的数据 # 只能在视图函数内部调用它
+3. 在视图函数中使用flash()向界面传递消息，Flask的session在请求间存储数据，它把数据签名后存储到浏览器的 Cookie 中, 注意app.config['SECRET_KEY']一般也要设置
+4. 重定向，例redirect(url_for('index'))，通过视图函数index获取url='\', 重定向至index界面
+
+## 2.4 用户认证
+1. Werkzeug内置生成和验证密码散列值的函数，flask-login可用于用户验证
+2. class User(db.Model, UserMixin):  # 继承UserMixin，使User有用于判断认证状态的属性和方法
+3. 装饰器@login_required，未登录视图保护
+4. login_manager.login_view 的值设为登录视图端点（函数名）
+5. 模板中可用{% if current_user.is_authenticated %}判断用户权限以选择性渲染
+
+# 3. 组织代码
+1. 拆分app.py文件
+2. 运行时若db报错，先用flask forge创建数据库
+3. pip 添加 requirements.txt
+
+'''
+数据库模型 -> models.py
+
+
+# 项目文件结构如下
+├── .flaskenv   #
+├── test_watchlist.py
+└── watchlist  # 程序包
+    ├── __init__.py
+    ├── commands.py
+    ├── errors.py
+    ├── models.py
+    ├── views.py
+    ├── static
+    │   ├── favicon.ico
+    │   ├── images
+    │   └── style.css
+    └── templates
+       |-- base.html
+       |-- edit.html
+       |-- 404.html
+       |-- index.html
+       |-- login.html
+       |-- settings.html
+'''
