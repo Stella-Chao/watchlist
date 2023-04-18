@@ -29,8 +29,7 @@ def forge():
     user = User(name=name)
     db.session.add(user)
     for m in movies:
-        m
-        ovie = Movie(title=m['title'], year=m['year'])
+        movie = Movie(title=m['title'], year=m['year'])
         db.session.add(movie)
     db.session.commit()
     click.echo('done! ')
